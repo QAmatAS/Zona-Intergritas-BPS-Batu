@@ -6,7 +6,9 @@ function App() {
   return (
     <>
       <div>
-        <MainCategory/>
+        <MainCategory kodeApi='PillarSatu' IdPillar='1'/>
+        <MainCategory kodeApi='PillarDua' IdPillar='2'/>
+        <MainCategory kodeApi='PillarTiga' IdPillar='3'/>
         <Outlet/>
       </div>
     </>

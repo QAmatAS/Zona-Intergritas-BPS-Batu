@@ -3,9 +3,11 @@ import React, { useState, type ChangeEvent, type FormEvent } from 'react';
 // Definisikan tipe data untuk state formulir
 interface FormData {
   idAksi: string;
+  uraianAksi: string;
+  // linkLaporanAksi: string;
   idKegiatan: string;
   uraianKegiatan: string;
-  linkLaporanKegiatan: string;
+  // linkLaporanKegiatan: string;
   output: string;
   jumlah: number;
   quarter: string;
@@ -17,9 +19,11 @@ const Formulir: React.FC = () => {
   // State dengan tipe FormData yang telah didefinisikan
   const [formData, setFormData] = useState<FormData>({
     idAksi: '',
+    uraianAksi: '',
+    // linkLaporanAksi: '',
     idKegiatan: '',
     uraianKegiatan: '',
-    linkLaporanKegiatan: '',
+    // linkLaporanKegiatan: '',
     output: '',
     jumlah: 0, 
     quarter: '',
@@ -43,17 +47,25 @@ const Formulir: React.FC = () => {
     
     // Buat objek dengan struktur JSON yang diinginkan
     const dataToPost = {
-      id: formData.idKegiatan,
-      uraian: formData.uraianKegiatan,
-      output: formData.output,
-      jumlah: formData.jumlah,
-      quarter: formData.quarter,
-      pic: formData.pic,
-      keterangan: formData.keterangan,
+      id: formData.idAksi,
+      rencanaAksi: formData.uraianAksi,
+      // linkLaporanAksi: formData.linkLaporanAksi,
+      rincianKegiatan: [
+        {
+          id: formData.idKegiatan,
+          uraian: formData.uraianKegiatan,
+          // linkLaporanKegiatan: formData.linkLaporanKegiatan,
+          output: formData.output,
+          jumlah: formData.jumlah,
+          quarter: formData.quarter,
+          pic: formData.pic,
+          keterangan: formData.keterangan,
+        },
+      ],
     };
     
-    // Gunakan idAksi dari state untuk membuat URL endpoint
-    const apiEndpoint = `http://localhost:3000/SOP/add-rincian/${formData.idAksi}`; 
+    // URL API endpoint yang telah diperbarui
+    const apiEndpoint = 'http://localhost:3000/SOP'; 
 
     try {
       const response = await fetch(apiEndpoint, {
@@ -90,8 +102,8 @@ const Formulir: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Formulir Laporan Aksi</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Kelompok untuk ID Aksi dan Uraian Kegiatan */}
-          <div className="lg:col-span-1">
+          {/* Kolom ID Aksi (1 kolom) */}
+          <div>
             <label htmlFor="idAksi" className="block text-sm font-medium text-gray-700">ID Aksi</label>
             <input 
               type="text" 
@@ -104,21 +116,36 @@ const Formulir: React.FC = () => {
             />
           </div>
 
-          <div className="md:col-span-2 lg:row-span-2">
-            <label htmlFor="uraianKegiatan" className="block text-sm font-medium text-gray-700">Uraian Rincian Kegiatan</label>
+          {/* Kolom Uraian Aksi (2 kolom) */}
+          <div className="md:col-span-2">
+            <label htmlFor="uraianAksi" className="block text-sm font-medium text-gray-700">Rencana Aksi</label>
             <textarea 
-              name="uraianKegiatan" 
-              id="uraianKegiatan" 
-              value={formData.uraianKegiatan} 
+              name="uraianAksi" 
+              id="uraianAksi" 
+              value={formData.uraianAksi} 
               onChange={handleChange}
-              rows={5} 
+              rows={3} 
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 resize-y"
             />
           </div>
 
-          {/* Kolom ID Kegiatan */}
-          <div className="lg:col-span-1">
+          {/* Kolom Link Dokumen Laporan Aksi (3 kolom penuh) */}
+
+          {/* <div className="lg:col-span-3">
+            <label htmlFor="linkLaporanAksi" className="block text-sm font-medium text-gray-700">Link Dokumen Laporan Aksi</label>
+            <input 
+              type="text" 
+              name="linkLaporanAksi" 
+              id="linkLaporanAksi" 
+              value={formData.linkLaporanAksi} 
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div> */}
+
+          {/* Kolom ID Kegiatan (1 kolom) */}
+          <div>
             <label htmlFor="idKegiatan" className="block text-sm font-medium text-gray-700">ID Kegiatan</label>
             <input 
               type="text" 
@@ -130,9 +157,24 @@ const Formulir: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
+
+          {/* Kolom Uraian Kegiatan (2 kolom) */}
+          <div className="md:col-span-2">
+            <label htmlFor="uraianKegiatan" className="block text-sm font-medium text-gray-700">Uraian Rincian Kegiatan</label>
+            <textarea 
+              name="uraianKegiatan" 
+              id="uraianKegiatan" 
+              value={formData.uraianKegiatan} 
+              onChange={handleChange}
+              rows={3} 
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 resize-y"
+            />
+          </div>
           
           {/* Kolom Link Dokumen Laporan Kegiatan (3 kolom penuh) */}
-          <div className="lg:col-span-3">
+
+          {/* <div className="lg:col-span-3">
             <label htmlFor="linkLaporanKegiatan" className="block text-sm font-medium text-gray-700">Link Dokumen Laporan Kegiatan</label>
             <input 
               type="text" 
@@ -142,7 +184,7 @@ const Formulir: React.FC = () => {
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
-          </div>
+          </div> */}
 
           {/* Kolom Output (1 kolom) */}
           <div>
