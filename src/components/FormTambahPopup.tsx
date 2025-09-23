@@ -147,11 +147,6 @@ const FormulirTambahPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClo
     }
   };
 
-  // Function to handle changes for the new Rencana Aksi input
-  const handleNewRencanaAksiChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewRencanaAksi(e.target.value);
-  };
-
   // Function to toggle between existing and new Aksi forms
   const handleToggleForm = () => {
     setIsNewAksi(!isNewAksi);
