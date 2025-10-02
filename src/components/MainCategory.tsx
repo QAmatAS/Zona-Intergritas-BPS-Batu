@@ -59,15 +59,27 @@ const useFetchData = (apiEndpoint: string) => {
 
 const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isQuarterDropdownOpen, setIsQuarterDropdownOpen] = useState(false);
+  const [selectedQuarter, setSelectedQuarter] = useState<string>('Semua'); // New state for selected quarter
   const [selectedForm, setSelectedForm] = useState('');
 
   const apiEndpoint = `http://localhost:3000/${kodeApi}`;
   const { data, isLoading, error } = useFetchData(apiEndpoint);
-  // Destructure the new object from the hook
   const { pillarInfo, isLoadingPillar, errorPillar } = useFetchPillarTitle(IdPillar);
 
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
+    setIsQuarterDropdownOpen(false); // Close quarter dropdown when opening form dropdown
+  };
+
+  const handleQuarterDropdownToggle = () => {
+    setIsQuarterDropdownOpen(!isQuarterDropdownOpen);
+    setIsDropdownOpen(false); // Close form dropdown when opening quarter dropdown
+  };
+
+  const handleQuarterSelect = (quarter: string) => {
+    setSelectedQuarter(quarter);
+    setIsQuarterDropdownOpen(false);
   };
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -107,17 +119,48 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
     );
   }
 
+  // Filter the data based on the selected quarter
+  const filteredData = data.map(aksi => ({
+    ...aksi,
+    rincianKegiatan: aksi.rincianKegiatan.filter(rincian => 
+      selectedQuarter === 'Semua' || rincian.quarter === selectedQuarter
+    )
+  })).filter(aksi => aksi.rincianKegiatan.length > 0);
+
   return (
-    <div className="flex w-full h-full bg-pink-100 justify-center">
-      <div className="w-full bg-white shadow-2xl overflow-hidden">
+    <div className="flex w-full h-full bg-white justify-center">
+      <div className="w-full bg-white shadow-2xl overflow-hidden pb-10">
         <main className="p-6 sm:p-8">
           <section className="mb-8">
             <div className="w-full">
               <div className="flex items-center justify-between relative mb-4">
-                <div></div>
+                {/* Quarter Filter Dropdown */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={handleQuarterDropdownToggle}
+                  >
+                    <span>Filter: {selectedQuarter}</span>
+                    <svg className={`-mr-1 h-5 w-5 text-white transition-transform duration-200 ${isQuarterDropdownOpen ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  {isQuarterDropdownOpen && (
+                    <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="py-1" role="none">
+                        <a href="#" className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" onClick={(e) => { e.preventDefault(); handleQuarterSelect('Semua'); }}>Semua Quarter</a>
+                        <a href="#" className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" onClick={(e) => { e.preventDefault(); handleQuarterSelect('Quarter 1'); }}>Quarter 1</a>
+                        <a href="#" className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" onClick={(e) => { e.preventDefault(); handleQuarterSelect('Quarter 2'); }}>Quarter 2</a>
+                        <a href="#" className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" onClick={(e) => { e.preventDefault(); handleQuarterSelect('Quarter 3'); }}>Quarter 3</a>
+                        <a href="#" className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" onClick={(e) => { e.preventDefault(); handleQuarterSelect('Quarter 4'); }}>Quarter 4</a>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {/* Use the namaPillar from the pillarInfo object */}
                 <h3 className="text-3xl font-semibold text-gray-800">{pillarInfo.namaPillar}</h3>
-                {/* <h2 className="text-2xl font-semibold text-gray-800">{pillarInfo.linkFolder}</h2> */}
+                {/* Form Options Dropdown */}
                 <div className="relative">
                   <button
                     type="button"
@@ -143,22 +186,24 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
                 </div>
               </div>
               <TableHeader />
-              {data.map((item) => (
+              {filteredData.map((item) => (
                 <div key={item.id} className="flex h-full">
-                  <div className="flex w-7/40">
-                    <div className="w-1/7 border-b-2 border-gray-700"><TableCell text={item.id} /></div>
-                    <div className="w-6/7 border-b-2 border-gray-700"><TableCell text={item.rencanaAksi} /></div>
+                  <div className="flex w-8/40 border-b-2 border-gray-700">
+                    <div className="w-1/8 border-l-2 border-gray-700 bg-blue-300"><TableCell text={item.id} /></div>
+                    <div className="w-7/8 border-l-2 border-white"><TableCell text={item.rencanaAksi} /></div>
                   </div>
-                  <div className="flex-col w-33/40">
+                  <div className="flex-col w-32/40">
                     {item.rincianKegiatan.map((rincian) => (
-                      <div key={rincian.id} className="flex border-gray-700 border-b-2">
-                        <div className="w-1/13"><TableCell text={rincian.id} /></div>
-                        <div className="w-12/13"><TableCell text={rincian.uraian} /></div>
-                        <div className="w-4/13"><TableCell text={rincian.output} /></div>
-                        <div className="w-2/13"><TableCell text={rincian.jumlah} /></div>
-                        <div className="w-4/13"><TableCell text={rincian.quarter} /></div>
-                        <div className="w-4/13"><TableCell text={rincian.pic} /></div>
-                        <div className="w-6/13"><TableCell text={rincian.keterangan} /></div>
+                      <div key={rincian.id} className="flex border-b-2 border-gray-700">
+                        <div className="w-1/32 bg-blue-300"><TableCell text={rincian.id} /></div>
+                        <div className="w-9/32"><TableCell text={rincian.uraian} /></div>
+                        <div className="w-3/32"><TableCell text={rincian.output} /></div>
+                        <div className="w-2/32"><TableCell text={rincian.jumlah} /></div>
+                        <div className="w-3/32"><TableCell text={rincian.quarter} /></div>
+                        <div className="w-2/32"><TableCell text={rincian.realisasiJumlah} /></div>
+                        <div className="w-3/32"><TableCell text={rincian.realisasiQuarter} /></div>
+                        <div className="w-3/32"><TableCell text={rincian.pic} /></div>
+                        <div className="w-6/32 border-r-2"><TableCell text={rincian.keterangan} /></div>
                       </div>
                     ))}
                   </div>
