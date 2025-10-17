@@ -70,7 +70,7 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
   const [openRincianIds, setOpenRincianIds] = useState<string[]>([]);
 
 
-  const apiEndpoint = `http://localhost:3000/${kodeApi}`;
+  const apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodeApi}`;
   const { data, isLoading, error } = useFetchData(apiEndpoint);
   const { pillarInfo, isLoadingPillar, errorPillar } = useFetchPillarTitle(IdPillar);
 
