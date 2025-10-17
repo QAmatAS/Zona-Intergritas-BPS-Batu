@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import TableCell from './TableCell';
-import TableHeader from './TableHeader';
 import FormulirTambahPopup from './FormTambahPopup';
 import FormulirEditPopup from './FormEditPopup';
 import FormulirHapusPopup from './FormHapusPopup';
@@ -18,6 +16,7 @@ interface RincianKegiatan {
   keterangan: string;
   realisasiQuarter: string;
   realisasiJumlah: number;
+  linkLaporanKegiatan: string;
 }
 
 interface AksiData {
@@ -60,21 +59,49 @@ const useFetchData = (apiEndpoint: string) => {
 const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isQuarterDropdownOpen, setIsQuarterDropdownOpen] = useState(false);
-  const [selectedQuarter, setSelectedQuarter] = useState<string>('Semua'); // New state for selected quarter
+  const [selectedQuarter, setSelectedQuarter] = useState<string>('Semua');
   const [selectedForm, setSelectedForm] = useState('');
+  
+  // State untuk melacak aksi mana yang terbuka (Tingkat 1)
+  const [openAksiIds, setOpenAksiIds] = useState<(number | string)[]>([]);
+
+  // State baru untuk melacak rincian kegiatan mana yang terbuka (Tingkat 2)
+  // Kita akan menggunakan kombinasi AksiId-RincianId untuk memastikan keunikan (misalnya "1-2")
+  const [openRincianIds, setOpenRincianIds] = useState<string[]>([]);
+
 
   const apiEndpoint = `http://localhost:3000/${kodeApi}`;
   const { data, isLoading, error } = useFetchData(apiEndpoint);
   const { pillarInfo, isLoadingPillar, errorPillar } = useFetchPillarTitle(IdPillar);
 
+  // Fungsi untuk membuka/menutup detail rincian kegiatan (Tingkat 1)
+  const handleAksiToggle = (id: number | string) => {
+    setOpenAksiIds(prevIds => 
+      prevIds.includes(id) 
+        ? prevIds.filter(aksiId => aksiId !== id)
+        : [...prevIds, id]
+    );
+  };
+  
+  // Fungsi untuk membuka/menutup detail rincian kegiatan (Tingkat 2)
+  const handleRincianToggle = (aksiId: number | string, rincianId: number | string) => {
+    const uniqueId = `${aksiId}-${rincianId}`;
+    setOpenRincianIds(prevIds =>
+      prevIds.includes(uniqueId)
+        ? prevIds.filter(id => id !== uniqueId)
+        : [...prevIds, uniqueId]
+    );
+  };
+
+
   const handleDropdownToggle = () => {
     setIsDropdownOpen(!isDropdownOpen);
-    setIsQuarterDropdownOpen(false); // Close quarter dropdown when opening form dropdown
+    setIsQuarterDropdownOpen(false);
   };
 
   const handleQuarterDropdownToggle = () => {
     setIsQuarterDropdownOpen(!isQuarterDropdownOpen);
-    setIsDropdownOpen(false); // Close form dropdown when opening quarter dropdown
+    setIsDropdownOpen(false);
   };
 
   const handleQuarterSelect = (quarter: string) => {
@@ -122,18 +149,25 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
   // Filter the data based on the selected quarter
   const filteredData = data.map(aksi => ({
     ...aksi,
-    rincianKegiatan: aksi.rincianKegiatan.filter(rincian => 
+    rincianKegiatan: aksi.rincianKegiatan.filter(rincian =>
       selectedQuarter === 'Semua' || rincian.quarter === selectedQuarter
     )
   })).filter(aksi => aksi.rincianKegiatan.length > 0);
+  
+  // Fungsi helper untuk memeriksa apakah aksi terbuka (Tingkat 1)
+  const isAksiOpen = (id: number | string) => openAksiIds.includes(id);
+
+  // Fungsi helper untuk memeriksa apakah rincian terbuka (Tingkat 2)
+  const isRincianOpen = (aksiId: number | string, rincianId: number | string) => openRincianIds.includes(`${aksiId}-${rincianId}`);
+
 
   return (
-    <div className="flex w-full h-full bg-white justify-center">
-      <div className="w-full bg-white shadow-2xl overflow-hidden pb-10">
+    <div className="flex w-full h-full bg-gray-100 justify-center">
+      <div className="w-full max-w-7xl bg-white shadow-2xl overflow-hidden pb-10">
         <main className="p-6 sm:p-8">
           <section className="mb-8">
             <div className="w-full">
-              <div className="flex items-center justify-between relative mb-4">
+              <div className="flex items-center justify-between relative mb-8">
                 {/* Quarter Filter Dropdown */}
                 <div className="relative">
                   <button
@@ -159,7 +193,7 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
                   )}
                 </div>
                 {/* Use the namaPillar from the pillarInfo object */}
-                <h3 className="text-3xl font-semibold text-gray-800">{pillarInfo.namaPillar}</h3>
+                <h3 className="text-3xl font-bold text-gray-800 text-center flex-grow">{pillarInfo.namaPillar}</h3>
                 {/* Form Options Dropdown */}
                 <div className="relative">
                   <button
@@ -185,30 +219,87 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
                   )}
                 </div>
               </div>
-              <TableHeader />
-              {filteredData.map((item) => (
-                <div key={item.id} className="flex h-full">
-                  <div className="flex w-8/40 border-b-2 border-gray-700">
-                    <div className="w-1/8 border-l-2 border-gray-700 bg-blue-300"><TableCell text={item.id} /></div>
-                    <div className="w-7/8 border-l-2 border-white"><TableCell text={item.rencanaAksi} /></div>
-                  </div>
-                  <div className="flex-col w-32/40">
-                    {item.rincianKegiatan.map((rincian) => (
-                      <div key={rincian.id} className="flex border-b-2 border-gray-700">
-                        <div className="w-1/32 bg-blue-300"><TableCell text={rincian.id} /></div>
-                        <div className="w-9/32"><TableCell text={rincian.uraian} /></div>
-                        <div className="w-3/32"><TableCell text={rincian.output} /></div>
-                        <div className="w-2/32"><TableCell text={rincian.jumlah} /></div>
-                        <div className="w-3/32"><TableCell text={rincian.quarter} /></div>
-                        <div className="w-2/32"><TableCell text={rincian.realisasiJumlah} /></div>
-                        <div className="w-3/32"><TableCell text={rincian.realisasiQuarter} /></div>
-                        <div className="w-3/32"><TableCell text={rincian.pic} /></div>
-                        <div className="w-6/32 border-r-2"><TableCell text={rincian.keterangan} /></div>
+              {/* Main Content: Action Plans and Activities */}
+              <div className="space-y-8">
+                {filteredData.map((aksi) => (
+                  <div key={aksi.id} className="bg-white border border-gray-300 rounded-lg shadow-md">
+                    {/* Action Plan (Rencana Aksi) Header - Clickable to toggle activities list (Tingkat 1) */}
+                    <div 
+                      className="flex items-center justify-between p-5 cursor-pointer hover:bg-indigo-50 transition duration-150"
+                      onClick={() => handleAksiToggle(aksi.id)}
+                    >
+                      <h4 className="text-xl font-semibold text-indigo-700 flex-grow">
+                        {aksi.id}. {aksi.rencanaAksi}
+                      </h4>
+                      <svg 
+                        className={`w-5 h-5 text-indigo-600 transition-transform duration-300 ${isAksiOpen(aksi.id) ? 'rotate-180' : ''}`} 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+
+                    {/* Activities (Rincian Kegiatan) List - Conditional Rendering (Tingkat 1) */}
+                    {isAksiOpen(aksi.id) && (
+                      <div className="border-t border-indigo-200 p-5 pt-0">
+                        <div className="space-y-3 ml-4">
+                          {aksi.rincianKegiatan.map((rincian) => (
+                            <div key={rincian.id} className="bg-white border border-gray-200 rounded-md shadow-sm">
+                              {/* Rincian Kegiatan Uraian - Clickable to toggle details (Tingkat 2) */}
+                              <div
+                                className="flex items-center justify-between p-3 cursor-pointer hover:bg-indigo-50 transition duration-150"
+                                onClick={() => handleRincianToggle(aksi.id, rincian.id)}
+                              >
+                                <p className="font-medium text-gray-800 flex-grow">
+                                  {/* <span className="text-indigo-600 font-bold mr-2">[{rincian.id}]</span> */}
+                                  {rincian.uraian}
+                                </p>
+                                <svg 
+                                  className={`w-4 h-4 text-indigo-500 transition-transform duration-300 ${isRincianOpen(aksi.id, rincian.id) ? 'rotate-180' : ''}`} 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  viewBox="0 0 20 20" 
+                                  fill="currentColor"
+                                >
+                                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+
+                              {/* Rincian Kegiatan Detail - Conditional Rendering (Tingkat 2) */}
+                              {isRincianOpen(aksi.id, rincian.id) && (
+                                <div className="border-t border-gray-200 p-3 bg-gray-50 text-sm">
+                                  
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-md text-gray-600">
+                                    <div>
+                                      <span className="font-semibold text-indigo-500">Target:</span> {rincian.jumlah} {rincian.output} ({rincian.quarter})
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold text-indigo-500">Realisasi:</span> {rincian.realisasiJumlah} {rincian.output} ({rincian.realisasiQuarter})
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold text-indigo-500">PIC:</span> {rincian.pic}
+                                    </div>
+                                    <div>
+                                      <span className="font-semibold text-indigo-500">Link Folder:</span> {rincian.linkLaporanKegiatan}
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 md:grid-cols-1 gap-3 text-md text-gray-600 mt-5">
+                                    <div className="">
+                                      <span className="font-semibold text-indigo-500">Keterangan:</span> {rincian.keterangan || '-'}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </section>
         </main>
@@ -237,7 +328,7 @@ const MainCategory = ({ kodeApi, IdPillar }: { kodeApi: string; IdPillar: string
       {selectedForm === 'FormulirUbahLink' && isPopupOpen && (
         <FormUbahLinkPopup
           isOpen={true}
-          onClose={closePopup} 
+          onClose={closePopup}
           initialPillarId={pillarInfo.id}
           />
       )}

@@ -12,6 +12,7 @@ interface FormDataUpdate {
   quarter: string;
   pic: string;
   keterangan: string;
+  linkLaporanKegiatan: string;
   realisasiQuarter: string;
   realisasiJumlah: number;
 }
@@ -25,6 +26,7 @@ interface RincianKegiatan {
   quarter: string;
   pic: string;
   keterangan: string;
+  linkLaporanKegiatan: string;
   realisasiQuarter?: string;
   realisasiJumlah?: number;
 }
@@ -63,6 +65,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
     quarter: '',
     pic: '',
     keterangan: '',
+    linkLaporanKegiatan: '',
     realisasiQuarter: '',
     realisasiJumlah: 0
   });
@@ -142,6 +145,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
         quarter: '',
         pic: '',
         keterangan: '',
+        linkLaporanKegiatan: '',
         realisasiQuarter: '',
         realisasiJumlah: 0
       }));
@@ -161,6 +165,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
             quarter: selectedRincian.quarter,
             pic: selectedRincian.pic,
             keterangan: selectedRincian.keterangan,
+            linkLaporanKegiatan: selectedRincian.linkLaporanKegiatan,
             realisasiQuarter: selectedRincian.realisasiQuarter || '',
             realisasiJumlah: selectedRincian.realisasiJumlah || 0
           }));
@@ -181,6 +186,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
       quarter: formData.quarter,
       pic: formData.pic,
       keterangan: formData.keterangan,
+      linkLaporanKegiatan: formData.linkLaporanKegiatan,
       realisasiQuarter: formData.realisasiQuarter,
       realisasiJumlah: formData.realisasiJumlah
     };
@@ -322,14 +328,13 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
             </select>
           </div>
           
-          <div className="md:col-span-2 row-span-2">
+          <div className="md:col-span-2 row-span-1">
             <label htmlFor="uraianKegiatan" className="block text-sm font-medium text-gray-700">Uraian Rincian Kegiatan</label>
-            <textarea 
+            <input
               name="uraianKegiatan" 
               id="uraianKegiatan" 
               value={formData.uraianKegiatan} 
               onChange={handleChange}
-              rows={5} 
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 resize-y"
             />
@@ -337,7 +342,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
 
           {/* Perubahan pada elemen input Quarter */}
           <div>
-            <label htmlFor="quarter" className="block text-sm font-medium text-gray-700">Quarter</label>
+            <label htmlFor="quarter" className="block text-sm font-medium text-gray-700">Target Quarter</label>
             <select
               name="quarter"
               id="quarter"
@@ -353,14 +358,14 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
               <option value="Quarter 4">Quarter 4</option>
             </select>
           </div>
-          
-          <div className='col-span-1'>
-            <label htmlFor="jumlah" className="block text-sm font-medium text-gray-700">Jumlah</label>
+
+          <div>
+            <label htmlFor="pic" className="block text-sm font-medium text-gray-700">PIC</label>
             <input 
-              type="number" 
-              name="jumlah" 
-              id="jumlah" 
-              value={formData.jumlah} 
+              type="text" 
+              name="pic" 
+              id="pic" 
+              value={formData.pic} 
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -379,14 +384,27 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
-
-          <div>
-            <label htmlFor="pic" className="block text-sm font-medium text-gray-700">PIC</label>
+          
+          <div className='col-span-1'>
+            <label htmlFor="jumlah" className="block text-sm font-medium text-gray-700">Target Jumlah</label>
+            <input 
+              type="number" 
+              name="jumlah" 
+              id="jumlah" 
+              value={formData.jumlah} 
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          
+          <div className='col-span-2'>
+            <label htmlFor="linkLaporanKegiatan" className="block text-sm font-medium text-gray-700">Link Folder</label>
             <input 
               type="text" 
-              name="pic" 
-              id="pic" 
-              value={formData.pic} 
+              name="linkLaporanKegiatan"
+              id="linkLaporanKegiatan" 
+              value={formData.linkLaporanKegiatan} 
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
