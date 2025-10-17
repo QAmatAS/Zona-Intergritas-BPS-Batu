@@ -132,10 +132,10 @@ const Formulir: React.FC = () => {
     }
   };
 
-  // Function to handle changes for the new Rencana Aksi input
-  const handleNewRencanaAksiChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewRencanaAksi(e.target.value);
-  };
+  // // Function to handle changes for the new Rencana Aksi input
+  // const handleNewRencanaAksiChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setNewRencanaAksi(e.target.value);
+  // };
 
   // Function to toggle between existing and new Aksi forms
   const handleToggleForm = () => {
