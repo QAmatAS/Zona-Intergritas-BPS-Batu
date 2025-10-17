@@ -5,10 +5,6 @@ import Pillar3 from '../Pillar3';
 import Pillar4 from '../Pillar4';
 import Pillar5 from '../Pillar5';
 import Pillar6 from '../Pillar6';
-import FormTambah from '../components/FormTambah';
-import FormEdit from '../components/FormEdit';
-import FormHapus from '../components/FormHapus';
-import FormUbahLink from '../components/FormUbahLink';
 
 const router = createBrowserRouter([
   {
@@ -34,22 +30,6 @@ const router = createBrowserRouter([
   {
     path: '/PillarEnam',
     element: <Pillar6 />,
-  },
-  {
-    path: '/FormTambah',
-    element: <FormTambah />,
-  },
-  {
-    path: '/FormEdit',
-    element: <FormEdit />,
-  },
-  {
-    path: '/FormHapus',
-    element: <FormHapus />,
-  },
-  {
-    path: '/FormUbahLink',
-    element: <FormUbahLink />,
   },
 ]);
 
