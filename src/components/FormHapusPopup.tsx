@@ -66,7 +66,7 @@ const FormulirHapusPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClos
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3000/${kodePillar}`);
+        const response = await fetch(`https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}`);
         if (!response.ok) {
           throw new Error('Gagal mengambil data dari API.');
         }
@@ -113,7 +113,7 @@ const FormulirHapusPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClos
       return;
     }
     
-    const apiEndpoint = `http://localhost:3000/${kodePillar}/delete-rincian/${selectedAksiId}/${selectedRincianId}`; 
+    const apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}/delete-rincian/${selectedAksiId}/${selectedRincianId}`; 
     
     if (!window.confirm(`Apakah Anda yakin ingin menghapus Rincian Kegiatan dengan ID: ${selectedRincianId} dari Aksi dengan ID: ${selectedAksiId}?`)) {
       return;
@@ -146,7 +146,7 @@ const FormulirHapusPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClos
       return;
     }
 
-    const apiEndpoint = `http://localhost:3000/${kodePillar}/${selectedAksiId}`;
+    const apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}/${selectedAksiId}`;
 
     if (!window.confirm(`Apakah Anda yakin ingin menghapus seluruh Aksi dengan ID: ${selectedAksiId} beserta rinciannya?`)) {
       return;

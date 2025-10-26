@@ -65,7 +65,7 @@ const Formulir: React.FC = () => {
     };
     
     // URL API endpoint yang telah diperbarui
-    const apiEndpoint = 'http://localhost:3000/SOP'; 
+    const apiEndpoint = 'https://zona-intergritas-bps-batu-fank.vercel.app/SOP'; 
 
     try {
       const response = await fetch(apiEndpoint, {

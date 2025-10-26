@@ -92,7 +92,7 @@ const FormulirTambahPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClo
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3000/${kodePillar}`);
+        const response = await fetch(`https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}`);
         if (!response.ok) {
           throw new Error('Gagal mengambil data dari API.');
         }
@@ -196,7 +196,7 @@ const FormulirTambahPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClo
           }
         ]
       };
-      apiEndpoint = `http://localhost:3000/${kodePillar}`;
+      apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}`;
       requestMethod = 'POST';
     } else {
       // If adding to an existing Aksi, prepare data for the add-rincian endpoint
@@ -211,7 +211,7 @@ const FormulirTambahPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClo
         pic: formData.pic,
         keterangan: formData.keterangan,
       };
-      apiEndpoint = `http://localhost:3000/${kodePillar}/add-rincian/${formData.idAksi}`;
+      apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}/add-rincian/${formData.idAksi}`;
       requestMethod = 'POST';
     }
 

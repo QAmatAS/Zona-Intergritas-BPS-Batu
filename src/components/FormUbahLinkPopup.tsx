@@ -48,7 +48,7 @@ const FormUbahLinkPopup: React.FC<{ isOpen: boolean; onClose: () => void; initia
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:3000/DaftarPillar');
+      const response = await fetch('https://zona-intergritas-bps-batu-fank.vercel.app/DaftarPillar');
       if (!response.ok) {
         throw new Error('Gagal mengambil data dari API.');
       }
@@ -101,7 +101,7 @@ const FormUbahLinkPopup: React.FC<{ isOpen: boolean; onClose: () => void; initia
       return;
     }
 
-    const apiEndpoint = `http://localhost:3000/DaftarPillar/${selectedPillarId}`;
+    const apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/DaftarPillar/${selectedPillarId}`;
     const dataToPatch = {
       linkFolder: linkFolder,
     };

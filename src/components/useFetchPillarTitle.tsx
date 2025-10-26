@@ -27,7 +27,7 @@ const useFetchPillarTitle = (IdPillar: string) => {
     const fetchPillarTitle = async () => {
       setIsLoadingPillar(true);
       try {
-        const response = await fetch(`http://localhost:3000/DaftarPillar/${IdPillar}`);
+        const response = await fetch(`https://zona-intergritas-bps-batu-fank.vercel.app/DaftarPillar/${IdPillar}`);
         if (!response.ok) {
           throw new Error(`Gagal mengambil data pillar: ${response.statusText}`);
         }

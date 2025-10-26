@@ -99,7 +99,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3000/${kodePillar}`);
+        const response = await fetch(`https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}`);
         if (!response.ok) {
           throw new Error('Gagal mengambil data dari API.');
         }
@@ -191,7 +191,7 @@ const FormulirEditPopup: React.FC<{ isOpen: boolean; kodePillar: string; onClose
       realisasiJumlah: formData.realisasiJumlah
     };
     
-    const apiEndpoint = `http://localhost:3000/${kodePillar}/update-rincian/${formData.idAksi}/${formData.idRincian}`; 
+    const apiEndpoint = `https://zona-intergritas-bps-batu-fank.vercel.app/${kodePillar}/update-rincian/${formData.idAksi}/${formData.idRincian}`; 
 
     try {
       const response = await fetch(apiEndpoint, {
